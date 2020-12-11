@@ -1,4 +1,4 @@
-import csv, random
+import random, os
 import utilities as utl
 
 adjectives = utl.file_to_array('./data/adjectives_clean.txt')
@@ -31,12 +31,15 @@ def run_username_generator(outputFile, label, num_to_generate, obfuscation, list
             if (obfuscation):
                 username = obfuscate(username)
 
-            oFile.write(utl.print_name_data(label, username))
+            oFile.write(utl.print_name_data(str(label), username))
 
 def generate_usernames(outputFile, count, percent_offensive, percent_obfuscated):
 
-    run_username_generator(outputFile, "G", count * (1 - percent_offensive) * (1 - percent_obfuscated), False, good_words, good_words)
-    run_username_generator(outputFile, "G", count * (1 - percent_offensive) * percent_obfuscated, True, good_words, good_words)
-    run_username_generator(outputFile, "B", count * percent_offensive * (1 - percent_obfuscated), False, good_words, bad_words)
-    run_username_generator(outputFile, "B", count * percent_offensive * percent_obfuscated, True, good_words, bad_words)
+    if os.path.exists(outputFile):
+        os.remove(outputFile)
+
+    run_username_generator(outputFile, 0, count * (1 - percent_offensive) * (1 - percent_obfuscated), False, good_words, good_words)
+    run_username_generator(outputFile, 0, count * (1 - percent_offensive) * percent_obfuscated, True, good_words, good_words)
+    run_username_generator(outputFile, 1, count * percent_offensive * (1 - percent_obfuscated), False, good_words, bad_words)
+    run_username_generator(outputFile, 1, count * percent_offensive * percent_obfuscated, True, good_words, bad_words)
 
