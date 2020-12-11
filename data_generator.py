@@ -16,53 +16,40 @@ def obfuscate(username):
             return_username = return_username[:i] + obfuscation_dictionary[char] + return_username[i+1:]
     return return_username
 
-def adjective_noun_generator(num_to_generate, obfuscation):
-
-    with open("./data/good_adjective_noun.txt", 'w') as outputFile:
+def run_username_generator(outputFile, label, num_to_generate, obfuscation, list_1, list_2):
+    with open(outputFile, 'w') as oFile:
         for i in range(num_to_generate):
-            ran_adj = random.choice(adjectives)
-            ran_noun = random.choice(nouns)
-            username = ran_adj + ran_noun
+            ran_1 = random.choice(list_1)
+            ran_2 = random.choice(list_2)
+
+            username = ran_1 + ran_2
+
+            if random.randint(0, 1) == 1:
+                username = ran_2 + ran_1
 
             if (obfuscation):
                 username = obfuscate(username)
 
-            outputFile.write(utl.print_name_data("G", username))
+            oFile.write(utl.print_name_data(label, username))
 
-def name_noun_generator(num_to_generate, obfuscation):
+def generate_usernames(num_generate):
 
-    with open("./data/good_name_noun.txt", 'w') as outputFile:
-        for i in range(num_to_generate):
-            ran_adj = random.choice(names)
-            ran_noun = random.choice(nouns)
-            username = ran_adj + ran_noun
+    # GOOD USERNAMES
+    run_username_generator("./data/generated/G_Adj_Name.txt", "G", num_generate, False, adjectives, names)
+    run_username_generator("./data/generated/G_Adj_Name_Obfs.txt", "G", num_generate, True, adjectives, names)
+    run_username_generator("./data/generated/G_Adj_Noun.txt", "G", num_generate, False, adjectives, nouns)
+    run_username_generator("./data/generated/G_Adj_Noun_Obfs.txt", "G", num_generate, True, adjectives, nouns)
+    run_username_generator("./data/generated/G_Name_Noun.txt", "G", num_generate, False, names, nouns)
+    run_username_generator("./data/generated/G_Name_Noun_Obfs.txt", "G", num_generate, True, names, nouns)
 
-            if (obfuscation):
-                username = obfuscate(username)
-
-            outputFile.write(utl.print_name_data("G", username))
-
-def clean_words():
-    for bad_word in bad_words:
-        if bad_word in nouns:
-            nouns.remove(bad_word)
-        if bad_word in adjectives:
-            adjectives.remove(bad_word)
-        if bad_word in names:
-            names.remove(bad_word)
-    
-    with open("./data/names_clean.txt", 'w') as names_file:
-        for name in names:
-            names_file.write(name + "\n")
-
-    with open("./data/nouns_clean.txt", 'w') as nouns_file:
-        for noun in nouns:
-            nouns_file.write(noun + "\n")
-
-    with open("./data/adjectives_clean.txt", 'w') as adjectives_file:
-        for adjective in adjectives:
-            adjectives_file.write(adjective + "\n")
+    # BAD USERNAMES
+    run_username_generator("./data/generated/B_CMU_Adj.txt", "B", num_generate, False, adjectives, bad_words)
+    run_username_generator("./data/generated/B_CMU_Adj_Obfs.txt", "B", num_generate, True, adjectives, bad_words)
+    run_username_generator("./data/generated/B_CMU_Name.txt", "B", num_generate, False, adjectives, bad_words)
+    run_username_generator("./data/generated/B_CMU_Name_Obfs.txt", "B", num_generate, True, adjectives, bad_words)
+    run_username_generator("./data/generated/B_CMU_Noun.txt", "B", num_generate, False, names, bad_words)
+    run_username_generator("./data/generated/B_CMU_Noun_Obfs.txt", "B", num_generate, True, names, bad_words)
 
 
 if __name__ == "__main__":
-    clean_words()
+    generate_usernames(50)
