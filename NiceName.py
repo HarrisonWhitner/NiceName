@@ -4,11 +4,10 @@ import sys
 import doctest
 from jellyfish import jaro_winkler_similarity
 
-""" 
-NiceName
-A python package for detecting offensive usernames
+""" NiceName
+A python package for detecting offensive usernames.
 
-Note: Usernames are assumed to be 25 
+Note: Usernames are assumed to be 25 charaters max and consist of alphanumeric characters and symbols on a keyboard (no spaces).
 
 Authors: Harrison Whitner, Jeremy Howe
 Creation Date: 11/28/20
@@ -32,8 +31,7 @@ LEETSPEAK_TO_ENGLISH_DICT = {'0':'o',
 """ FUNCTIONS """
 
 def score_username(usr: str, debug=False) -> float:
-    """ Returns a score for a username between 0 and 1, 0 being surely inoffensive and 1 being surely offensive.
-    """
+    """Returns a score for a username between 0 and 1, 0 being surely inoffensive and 1 being surely offensive."""
 
     # check for empty paramter
     if not usr:
@@ -64,8 +62,7 @@ def score_username(usr: str, debug=False) -> float:
     return 0.5
 
 def preprocess_username(usr: str, debug=False) -> str:
-    """ Prepares a word for scanning by removing characters outside of alphanumeric characters and forcing all lowerspace.
-    """
+    """Prepares a word for scanning by removing characters outside of alphanumeric characters and forcing all lowerspace."""
     
     #TODO remove all non-alphanumeric characters
     
@@ -75,8 +72,7 @@ def preprocess_username(usr: str, debug=False) -> str:
     return usr
 
 def score_word(seg: str, debug=False) -> float:
-    """ Returns a score for a word between 0 and 1, 0 being surely inoffensive and 1 being surely offensive. 
-    """
+    """Returns a score for a word between 0 and 1, 0 being surely inoffensive and 1 being surely offensive."""
     
     # create a list of possible leetspeak translations of the word, along with the original word
 
@@ -89,7 +85,7 @@ def score_word(seg: str, debug=False) -> float:
     return 0.5
 
 def leetspeak_to_english(seg: str, debug=False) -> list:
-    """ Returns a list of strings with all non-alphabetic character replaced by similar looking alphabetic characters.
+    """Returns a list of strings with all non-alphabetic character replaced by similar looking alphabetic characters.
     
     NOTE: This returns a list of strings to consider multiple possible translations of characters, but that functionality is not currently implemented.
 
