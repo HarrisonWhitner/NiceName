@@ -63,6 +63,56 @@ def preprocess_username(usr: str, debug=False) -> str:
 
     return usr
 
+def generate_username_scores(username: str, debug=False) -> list:
+    """Return the greatest Jaro score, greatest Levenshtein score and Levenshtein score between 2 most suspect words."""
+    
+    # loads bad word list
+    bad_words = util.file_to_array(BAD_WORD_LIST_FILEPATH)
+
+    # create a list of possible leetspeak translations of the word, along with the original word
+    leetspeak_segs = leetspeak_to_english(username, debug)
+
+    greatest_jaro_score = 0
+    greatest_lev_score = 0
+    most_similar_bad_word_jaro = ''
+    most_similar_bad_word_lev = ''
+    most_suspect_word_jaro = ''
+    most_suspect_word_lev = ''
+
+    for suspect_seg in [username] + leetspeak_segs:
+
+        # loop through all the bad words in the list
+        for bad_word in bad_words:
+
+            # compare all suspect words against current bad word with jaro and levenshtein, store greatest score
+            jaro_score = pylevenshtein.jaro(suspect_seg, bad_word)
+            lev_score = pylevenshtein.ratio(suspect_seg, bad_word)
+
+            if debug:
+                print('SCORING: Suspect word', suspect_seg, 'when compared to', bad_word, 'has a score of', jaro_score, 'by Jaro and', lev_score, 'by Levenshtein')
+
+            if jaro_score > greatest_jaro_score:
+                greatest_jaro_score = jaro_score
+                most_similar_bad_word_jaro = bad_word
+                most_suspect_word_jaro = suspect_seg
+
+            if lev_score > greatest_lev_score:
+                greatest_lev_score = lev_score
+                most_similar_bad_word_lev = bad_word
+                most_suspect_word_lev = suspect_seg
+
+    if debug:
+        print('SCORING_RESULT: Greatest Jaro score is', greatest_jaro_score, 'between', most_suspect_word_jaro, 'and', most_similar_bad_word_jaro)
+        print('SCORING_RESULT: Greatest Levenshtein score is', greatest_lev_score, 'between', most_suspect_word_lev, 'and', most_similar_bad_word_lev)
+
+    # calculate the Levenshtein score between the most similar bad words by Jaro and Levenshtein methods
+    comparison_lev_score = pylevenshtein.ratio(most_similar_bad_word_jaro, most_similar_bad_word_lev)
+
+    if debug:
+        print('SCORING_RESULT: Comparision score is', comparison_lev_score, 'between', most_similar_bad_word_jaro, 'and', most_similar_bad_word_lev)
+
+    return [greatest_jaro_score, greatest_lev_score, comparison_lev_score]
+
 def score_word(seg: str, bad_words: list, method='both', debug=False) -> float:
     """Returns a score for a word between 0 and 1, 0 being surely inoffensive and 1 being surely offensive.
     The method parameter can be both, jaro or levenshtein. Both returns whichever is higher, and the other
