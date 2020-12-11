@@ -2,7 +2,9 @@
 from data_generator import generate_usernames
 
 import utilities as util
-from sklean.neighbors import KNeighborsClassifier
+import word_score as wsc
+
+from sklearn.neighbors import KNeighborsClassifier
 
 """ NiceName
 A python package for detecting offensive usernames.
@@ -26,7 +28,17 @@ def generate_training_set(n_samples: int, percent_offensive=0.5, percent_obfusca
     """Create data which the KNN used to predict usernames is fit upon."""
 
     generate_usernames("./data/generated/training_usernames.txt", n_samples, percent_offensive, percent_obfuscated)
-    
+    username_array = util.file_to_array("./data/generated/training_usernames.txt")
+
+    with open(TRAINING_SET_FILENAME, 'w') as output_file:
+
+        for entry in username_array:
+
+                label, username = entry.split('\t')
+
+                jaro, lev, comparison = wsc.generate_username_scores(username)
+
+                output_file.write(username + ' ' + str(jaro) + ' ' + str(lev) + ' ' + str(comparison) + " " + str(label) + '\n')
 
 
 def predict_username_is_offensive(username: str, n_neighbors=5, weights='uniform', debug=False) -> bool:
@@ -40,3 +52,9 @@ def predict_username_is_offensive(username: str, n_neighbors=5, weights='uniform
         split_row = row.split()
         features.append([float(x) for x in split_row[1:4]])
         targets.append(int(split_row[4]))
+
+def main():
+    generate_training_set(100, .5, .5)
+
+if __name__ == "__main__":
+    main()
