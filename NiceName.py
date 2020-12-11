@@ -2,7 +2,7 @@
 
 import sys
 import doctest
-import Levenshtein as pylevenshtein
+pylevenshtein = __import__('Levenshtein')
 
 """ NiceName
 A python package for detecting offensive usernames.
