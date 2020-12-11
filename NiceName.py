@@ -2,6 +2,7 @@
 
 import sys
 import doctest
+import utilities as util
 pylevenshtein = __import__('Levenshtein')
 
 """ NiceName
@@ -17,7 +18,7 @@ Creation Date: 11/28/20
 
 BAD_WORD_LIST_FILEPATH = 'data/bad_words_cmu.txt' #TODO switch to the master and combine the bad word files
 LEETSPEAK_TO_ENGLISH_DICT = {'0':'o',
-                             '1':'l',
+                             '1':'l', #TODO handle 1 -> i translation
                              '3':'e', 
                              '4':'a', 
                              '5':'s', #TODO handle alternate 5 -> h translation
@@ -38,9 +39,7 @@ def score_username(usr: str, debug=False) -> float:
         raise ValueError('Missing username arguement')
 
     # loads bad word list
-    bad_words = None
-    with open(BAD_WORD_LIST_FILEPATH, 'r') as fp:
-        bad_words = set([w[:-2] for w in list(fp) if len(w[:-2]) > 0]) # remove the last 2 characters which are always a newline '\n'
+    bad_words = util.file_to_array(BAD_WORD_LIST_FILEPATH)
 
     # preprocess username
     processed_usr = preprocess_username(usr)
@@ -71,7 +70,7 @@ def preprocess_username(usr: str, debug=False) -> str:
 
     return usr
 
-def score_word(seg: str, bad_words: set, method='both', debug=False) -> float:
+def score_word(seg: str, bad_words: list, method='both', debug=False) -> float:
     """Returns a score for a word between 0 and 1, 0 being surely inoffensive and 1 being surely offensive.
     The method parameter can be both, jaro or levenshtein. Both returns whichever is higher, and the other
     two options force the score that is returned to be from that method.
