@@ -3,6 +3,7 @@
 from data_generator import generate_usernames
 import utilities as util
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report, confusion_matrix
 from word_score import generate_username_scores
 
 """ NiceName
@@ -64,29 +65,33 @@ def train_model(model):
         targets.append(int(label))
 
     model.fit(features, targets)
-
+    
 def calculate_accuracy(model):
 
     training_data = util.file_to_array(TESTING_SET_FILENAME)
     features = []
-    targets = []
+    true_targets = []
 
     for row in training_data:
-        curName, jaro, lev, comparison, label = row.split()
+        name, jaro, lev, comparison, label = row.split()
         features.append([float(jaro), float(lev), float(comparison)])
-        targets.append(int(label))
+        true_targets.append(int(label))
 
-    return model.score(features, targets)
-
+    pred_targets = model.predict(features)
+    print(classification_report(true_targets, pred_targets, target_names=['inoffensive', 'offensive']))
+    cm = confusion_matrix(true_targets, pred_targets)
+    print('confusion matrix:')
+    print(f'TN: {cm[0][0]:3} FN: {cm[1][0]:3}')
+    print(f'FP: {cm[0][1]:3} TP: {cm[1][1]:3}')
 
 def main():
-    generate_data_set(1000, TRAINING_SET_FILENAME, .5, .5)
-    generate_data_set(100, TESTING_SET_FILENAME, .5, .5)
+    generate_data_set(1000, TRAINING_SET_FILENAME, 0.5, 0.5)
+    generate_data_set(100, TESTING_SET_FILENAME, 0.5, 0.5)
     knn_model = KNeighborsClassifier(10, weights='distance')
     train_model(knn_model)
-    print(calculate_accuracy(knn_model))
-    while True:
-        predict_username_is_offensive(input('Enter a username to score: '), knn_model)
+    calculate_accuracy(knn_model)
+    while False:
+        predict_username_is_offensive(input('enter a username to score: '), knn_model)
 
 if __name__ == "__main__":
     main()
