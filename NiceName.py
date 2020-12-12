@@ -84,7 +84,7 @@ def main():
     generate_data_set(100, TESTING_SET_FILENAME, .5, .5)
     knn_model = KNeighborsClassifier(5)
     train_model(knn_model)
-    print(calculate_accuracy(knn_model))
+    print("Current model accuraacy based on random training and testing data: " + str(calculate_accuracy(knn_model)))
     while True:
         predict_username_is_offensive(input('Enter a username to score: '), knn_model)
 
