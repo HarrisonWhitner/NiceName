@@ -51,7 +51,7 @@ def predict_username_is_offensive(username: str, model, debug=False) -> bool:
     print('The username', username, 'is predicted to be', 'offensive' if test_target[0] else 'inoffensive')
     result = test_target[0]
 
-    return bool(test_target[0])
+    return bool(result)
 
 def train_model(model):
     training_data = util.file_to_array(TRAINING_SET_FILENAME)
