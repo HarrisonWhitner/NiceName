@@ -80,9 +80,9 @@ def calculate_accuracy(model):
 
 
 def main():
-    generate_data_set(100, TRAINING_SET_FILENAME, .5, .5)
+    generate_data_set(1000, TRAINING_SET_FILENAME, .5, .5)
     generate_data_set(100, TESTING_SET_FILENAME, .5, .5)
-    knn_model = KNeighborsClassifier(5)
+    knn_model = KNeighborsClassifier(10, weights='distance')
     train_model(knn_model)
     print(calculate_accuracy(knn_model))
     while True:
