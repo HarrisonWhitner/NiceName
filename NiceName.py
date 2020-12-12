@@ -5,6 +5,7 @@ import utilities as util
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 from word_score import generate_username_scores
+import sys
 
 """ NiceName
 A python package for detecting offensive usernames.
@@ -89,9 +90,11 @@ def main():
     generate_data_set(100, TESTING_SET_FILENAME, 0.5, 0.5)
     knn_model = KNeighborsClassifier(10, weights='distance')
     train_model(knn_model)
-    calculate_accuracy(knn_model)
-    while False:
-        predict_username_is_offensive(input('enter a username to score: '), knn_model)
+    if '-a' in sys.argv or '--accuracy' in sys.argv:
+        calculate_accuracy(knn_model)
+    else:
+        while True:
+            predict_username_is_offensive(input('enter a username to score: '), knn_model)
 
 if __name__ == "__main__":
     main()
